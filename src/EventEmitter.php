@@ -2,10 +2,12 @@
 
 namespace NetRivet\WordPress;
 
-use Evenement\EventEmitter as CoreEmitter;
-
-class EventEmitter extends CoreEmitter
+class EventEmitter
 {
+    /**
+     * @var array
+     */
+    protected $listeners = array();
 
     /**
      * Register a function with a hook. TODO support $accepted_args
@@ -17,7 +19,7 @@ class EventEmitter extends CoreEmitter
     public function on($hook, $function_to_add, $priority = 10)
     {
         if (function_exists('add_action')) {
-            \add_action($hook, $function_to_add, $priority);
+            add_action($hook, $function_to_add, $priority);
             return $this;
         }
 
@@ -25,15 +27,54 @@ class EventEmitter extends CoreEmitter
             throw new \InvalidArgumentException('The provided listener was not a valid callable.');
         }
 
-        if (!isset($this->listeners[$hook])) {
-            $this->listeners[$hook] = array();
-        }
-
-        $this->listeners[$hook][$priority] = $function_to_add;
+        $this->addListener($hook, $function_to_add, $priority);
         krsort($this->listeners[$hook]);
 
         return $this;
     }
+
+    /**
+     * Register a filter with a hook. TODO support $accepted args
+     *
+     * @param $hook
+     * @param $function_to_add
+     * @param $priority
+     * @return $this
+     */
+    public function filter($hook, $function_to_add, $priority = 10)
+    {
+        if (function_exists('add_filter')) {
+            add_filter($hook, $function_to_add, $priority);
+            return $this;
+        }
+
+        if (! function_exists('add_action')) {
+            $this->on($hook, $function_to_add, $priority);
+        }
+
+        return $this;
+    }
+
+    /**
+     * This function invokes all functions for a hook and transforms the given value(s)
+     *
+     * @param $hook
+     * @param $value
+     * @return $this|mixed
+     */
+    public function applyFilters($hook, $value /** ...args */)
+    {
+        $args = func_get_args();
+        $args = array_slice($args, 1);
+
+        if (function_exists('apply_filters')) {
+            call_user_func_array('apply_filters', $args);
+            return $this;
+        }
+
+        return $this->invokeListeners($hook, $args);
+    }
+
 
     /**
      * This function invokes all functions attached to action hook $tag
@@ -50,8 +91,58 @@ class EventEmitter extends CoreEmitter
             return $this;
         }
 
-        parent::emit($tag, $args);
+        $this->invokeListeners($tag, $arguments);
 
         return $this;
+    }
+
+    /**
+     * Return the listeners for a given hook
+     *
+     * @param $hook
+     * @return array
+     */
+    protected function listeners($hook)
+    {
+        return $this->listeners[$hook];
+    }
+
+    /**
+     * Add a prioritized listener
+     *
+     * @param $hook
+     * @param $function_to_add
+     * @param $priority
+     */
+    protected function addListener($hook, $function_to_add, $priority)
+    {
+        if (!isset($this->listeners[$hook])) {
+            $this->listeners[$hook] = array();
+        }
+
+        if (!isset($this->listeners[$hook][$priority])) {
+            $this->listeners[$hook][$priority] = array();
+        }
+
+        $this->listeners[$hook][$priority][] = $function_to_add;
+    }
+
+    /**
+     * Invoke all listeners for a given hook
+     *
+     * @param $listeners
+     * @param array $argument
+     */
+    protected function invokeListeners($hook, array $arguments)
+    {
+        $value = '';
+        $listeners = $this->listeners($hook);
+        foreach ($listeners as $key => $set) {
+            foreach ($set as $listener) {
+                $value = call_user_func_array($listener, $arguments);
+                $arguments[0] = $value;
+            }
+        }
+        return $value;
     }
 }

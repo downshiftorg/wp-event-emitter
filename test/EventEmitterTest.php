@@ -30,4 +30,19 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('early', $result);
     }
+
+    public function testFilters()
+    {
+        $this->emitter->filter('the_content', function ($content, $append) {
+            return $content . ' ' . $append;
+        });
+
+        $this->emitter->filter('the_content', function ($content) {
+            return $content . ' yolo';
+        });
+
+        $content = $this->emitter->applyFilters('the_content', 'ham', 'sandwich');
+
+        $this->assertEquals('ham sandwich yolo', $content);
+    }
 }

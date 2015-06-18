@@ -10,7 +10,6 @@
         }
     ],
     "require": {
-        "evenement/evenement": "~1.0"
     },
     "autoload": {
         "psr-4": {
