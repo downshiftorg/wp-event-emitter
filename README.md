@@ -9,7 +9,25 @@ a much more testable interface as it only uses the WP functions if they are avai
 
 ## Methods
 
-Methods are the same methods provided by version 1.0 of the [Événement](https://github.com/igorw/evenement/tree/v1.0.0) library.
+### on
+
+Delegate to WordPress' [add_action](https://codex.wordpress.org/Function_Reference/add_action) function. In test environments a local
+collection of listeners will be used.
+
+### emit
+
+Delegate to WordPress' [do_action](https://codex.wordpress.org/Function_Reference/do_action) function. In test environments a local
+collection of listeners will be used.
+
+### filter
+
+Delegate to WordPress' [add_filter](https://codex.wordpress.org/Function_Reference/add_filter) function. In test environments a local
+collection of listeners will be used.
+
+### applyFilters
+
+Delegate to WordPress' [apply_filters](https://codex.wordpress.org/Function_Reference/apply_filters) function. In test environments a
+local collection of listeners will be used.
 
 ## Tests
 

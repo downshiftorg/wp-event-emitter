@@ -2,7 +2,7 @@
 
 namespace NetRivet\WordPress;
 
-class EventEmitter
+class EventEmitter implements EventEmitterInterface
 {
     /**
      * @var array
@@ -10,7 +10,7 @@ class EventEmitter
     protected $listeners = array();
 
     /**
-     * Register a function with a hook. TODO support $accepted_args
+     * {@inheritdoc}
      *
      * @param $hook
      * @param $function_to_add
@@ -34,7 +34,7 @@ class EventEmitter
     }
 
     /**
-     * Register a filter with a hook. TODO support $accepted args
+     * {@inheritdoc}
      *
      * @param $hook
      * @param $function_to_add
@@ -56,7 +56,7 @@ class EventEmitter
     }
 
     /**
-     * This function invokes all functions for a hook and transforms the given value(s)
+     * {@inheritdoc}
      *
      * @param $hook
      * @param $value
@@ -77,7 +77,7 @@ class EventEmitter
 
 
     /**
-     * This function invokes all functions attached to action hook $tag
+     * {@inheritdoc}
      *
      * @param $tag
      */
