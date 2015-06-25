@@ -31,6 +31,19 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('early', $result);
     }
 
+    public function testEmitIsVariadicLikeWordPressDoAction()
+    {
+        $result = null;
+
+        $this->emitter->on('foo', function () use (&$result) {
+            $result = func_get_args();
+        });
+
+        $this->emitter->emit('foo', 'grace jones', 'andre the giant');
+
+        $this->assertSame(['grace jones', 'andre the giant'], $result);
+    }
+
     public function testFilters()
     {
         $this->emitter->filter('the_content', function ($content, $append) {
