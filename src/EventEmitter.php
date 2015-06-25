@@ -81,17 +81,17 @@ class EventEmitter implements EventEmitterInterface
      *
      * @param $tag
      */
-    public function emit($tag, array $arguments = array())
+    public function emit($tag /** ... args */)
     {
         $args = func_get_args();
-        $args = array_slice($args, 1);
+        $rest = array_slice($args, 1);
 
         if (function_exists('do_action')) {
             call_user_func_array('do_action', $args);
             return $this;
         }
 
-        $this->invokeListeners($tag, $arguments);
+        $this->invokeListeners($tag, $rest);
 
         return $this;
     }

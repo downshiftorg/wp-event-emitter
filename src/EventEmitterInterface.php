@@ -37,5 +37,5 @@ interface EventEmitterInterface
      *
      * @param $tag
      */
-    public function emit($tag, array $arguments = array());
+    public function emit($tag /** ... args */);
 }
