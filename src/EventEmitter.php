@@ -72,7 +72,7 @@ class EventEmitter implements EventEmitterInterface
             return $this;
         }
 
-        return $this->invokeListeners($hook, $args);
+        return $this->invokeHook($hook, $args, 'filter');
     }
 
 
@@ -91,7 +91,7 @@ class EventEmitter implements EventEmitterInterface
             return $this;
         }
 
-        $this->invokeListeners($tag, $rest);
+        $this->invokeHook($tag, $rest, 'action');
 
         return $this;
     }
@@ -130,19 +130,41 @@ class EventEmitter implements EventEmitterInterface
     /**
      * Invoke all listeners for a given hook
      *
-     * @param $listeners
+     * @param string $hook
      * @param array $argument
+     * @param string $type
      */
-    protected function invokeListeners($hook, array $arguments)
+    protected function invokeHook($hook, array $arguments, $type)
     {
         $value = '';
         $listeners = $this->listeners($hook);
+
         foreach ($listeners as $key => $set) {
-            foreach ($set as $listener) {
-                $value = call_user_func_array($listener, $arguments);
+            $value = $this->invokeListeners($set, $arguments, $type);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Invoke listeners for a given hook priority
+     *
+     * @param  array  $listeners
+     * @param  array  $arguments
+     * @param  string $type
+     * @return mixed
+     */
+    protected function invokeListeners(array $listeners, array $arguments, $type)
+    {
+        $value = '';
+
+        foreach ($listeners as $listener) {
+            $value = call_user_func_array($listener, $arguments);
+            if ($type === 'filter') {
                 $arguments[0] = $value;
             }
         }
+
         return $value;
     }
 }
