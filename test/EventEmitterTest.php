@@ -45,4 +45,9 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('ham sandwich yolo', $content);
     }
+
+    public function testPhpNoticesOrWarningsNotEmittedWhenApplyingFiltersToHookWithNoFilter()
+    {
+        $this->emitter->applyFilters('jim_jam', 'yolo neckbeard');
+    }
 }

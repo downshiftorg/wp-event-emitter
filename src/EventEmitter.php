@@ -104,7 +104,7 @@ class EventEmitter implements EventEmitterInterface
      */
     protected function listeners($hook)
     {
-        return $this->listeners[$hook];
+        return isset($this->listeners[$hook]) ? $this->listeners[$hook] : array();
     }
 
     /**
