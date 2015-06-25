@@ -41,7 +41,7 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
 
         $this->emitter->emit('foo', 'grace jones', 'andre the giant');
 
-        $this->assertSame(['grace jones', 'andre the giant'], $result);
+        $this->assertSame(array('grace jones', 'andre the giant'), $result);
     }
 
     public function testFilters()
