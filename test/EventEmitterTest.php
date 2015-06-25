@@ -63,4 +63,21 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
     {
         $this->emitter->applyFilters('jim_jam', 'yolo neckbeard');
     }
+
+    public function testMultipleEmits()
+    {
+        $test = null;
+
+        $this->emitter->on('foo', function ($arg) use (&$test) {
+            $test = $arg;
+        });
+
+        $this->emitter->on('foo', function ($arg) use (&$test) {
+            $test = $arg;
+        });
+
+        $this->emitter->emit('foo', 'bar');
+
+        $this->assertNotEmpty($test);
+    }
 }
