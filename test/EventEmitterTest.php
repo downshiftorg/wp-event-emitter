@@ -89,4 +89,36 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($toFilter, $filtered);
     }
+
+    public function testHasEventListenerReturnsFalseWhenNoListenerAdded()
+    {
+        $hasListener = $this->emitter->hasEventListener('foo');
+
+        $this->assertFalse($hasListener);
+    }
+
+    public function testHasEventListenerReturnsTrueWhenListenerAdded()
+    {
+        $this->emitter->on('foo', 'phpinfo');
+
+        $hasListener = $this->emitter->hasEventListener('foo');
+
+        $this->assertTrue($hasListener);
+    }
+
+    public function testHasFilterReturnsFalseWhenNoFilterAdded()
+    {
+        $hasFilter = $this->emitter->hasFilter('foo');
+
+        $this->assertFalse($hasFilter);
+    }
+
+    public function testHasFilterReturnsTrueWhenFilterAdded()
+    {
+        $this->emitter->filter('foo', 'strtoupper');
+
+        $hasFilter = $this->emitter->hasFilter('foo');
+
+        $this->assertTrue($hasFilter);
+    }
 }

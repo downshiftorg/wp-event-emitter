@@ -12,14 +12,14 @@ class EventEmitter implements EventEmitterInterface
     /**
      * {@inheritdoc}
      *
-     * @param $hook
+     * @param $event
      * @param $function_to_add
      * @param $int $priority
      */
-    public function on($hook, $function_to_add, $priority = 10)
+    public function on($event, $function_to_add, $priority = 10)
     {
         if (function_exists('add_action')) {
-            add_action($hook, $function_to_add, $priority);
+            add_action($event, $function_to_add, $priority);
             return $this;
         }
 
@@ -27,8 +27,8 @@ class EventEmitter implements EventEmitterInterface
             throw new \InvalidArgumentException('The provided listener was not a valid callable.');
         }
 
-        $this->addListener($hook, $function_to_add, $priority);
-        krsort($this->listeners[$hook]);
+        $this->addListener($event, $function_to_add, $priority);
+        krsort($this->listeners[$event]);
 
         return $this;
     }
@@ -36,33 +36,30 @@ class EventEmitter implements EventEmitterInterface
     /**
      * {@inheritdoc}
      *
-     * @param $hook
-     * @param $function_to_add
-     * @param $priority
+     * @param string $name
+     * @param mixed $function_to_add
+     * @param int $priority
      * @return $this
      */
-    public function filter($hook, $function_to_add, $priority = 10)
+    public function filter($name, $function_to_add, $priority = 10)
     {
         if (function_exists('add_filter')) {
-            add_filter($hook, $function_to_add, $priority);
+            add_filter($name, $function_to_add, $priority);
             return $this;
         }
 
-        if (! function_exists('add_action')) {
-            $this->on($hook, $function_to_add, $priority);
-        }
-
+        $this->on($name, $function_to_add, $priority);
         return $this;
     }
 
     /**
      * {@inheritdoc}
      *
-     * @param $hook
+     * @param $name
      * @param $value
      * @return $this|mixed
      */
-    public function applyFilters($hook, $value /** ...args */)
+    public function applyFilters($name, $value /** ...args */)
     {
         $args = func_get_args();
         $args = array_slice($args, 1);
@@ -72,7 +69,7 @@ class EventEmitter implements EventEmitterInterface
             return $this;
         }
 
-        return $this->invokeHook($hook, $args, 'filter');
+        return $this->invokeHook($name, $args, 'filter');
     }
 
 
@@ -81,7 +78,7 @@ class EventEmitter implements EventEmitterInterface
      *
      * @param $tag
      */
-    public function emit($tag /** ... args */)
+    public function emit($event /** ... args */)
     {
         $args = func_get_args();
         $rest = array_slice($args, 1);
@@ -91,9 +88,51 @@ class EventEmitter implements EventEmitterInterface
             return $this;
         }
 
-        $this->invokeHook($tag, $rest, 'action');
+        $this->invokeHook($event, $rest, 'action');
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @todo handle $function_to_check when using internal test listeners
+     */
+    public function hasEventListener($event, $function_to_check = false)
+    {
+        return $this->hasListener('action', $event, $function_to_check);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @todo handle $function_to_check when using internal test listeners
+     */
+    public function hasFilter($name, $function_to_check = false)
+    {
+        return $this->hasListener('filter', $name, $function_to_check);
+    }
+
+    /**
+     * Check if listener exists for type, hook, and function
+     *
+     * Delegates to WordPress `has_action` and `has_filter` when present,
+     * or falls back to internal listener queue for testing purposes
+     *
+     * @param  string  $type
+     * @param  string  $hook
+     * @param  mixed $function_to_check
+     * @return boolean
+     */
+    protected function hasListener($type, $hook, $function_to_check = false)
+    {
+        $wp_has_listener = 'has_' . $type;
+
+        if (function_exists($wp_has_listener)) {
+            return call_user_func($wp_has_listener, $hook, $function_to_check);
+        }
+
+        return (bool) $this->listeners($hook);
     }
 
     /**
