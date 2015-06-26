@@ -80,4 +80,13 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($test);
     }
+
+    public function testCallingApplyFiltersWithNoFiltersAddedReturnsValue()
+    {
+        $toFilter = 'foobar';
+
+        $filtered = $this->emitter->applyFilters('foo', $toFilter);
+
+        $this->assertSame($toFilter, $filtered);
+    }
 }

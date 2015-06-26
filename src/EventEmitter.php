@@ -133,11 +133,13 @@ class EventEmitter implements EventEmitterInterface
      * @param string $hook
      * @param array $argument
      * @param string $type
+     * @return mixed
      */
     protected function invokeHook($hook, array $arguments, $type)
     {
-        $value = '';
         $listeners = $this->listeners($hook);
+
+        $value = isset($arguments[0]) ? $arguments[0] : '';
 
         foreach ($listeners as $key => $set) {
             $value = $this->invokeListeners($set, $arguments, $type);
