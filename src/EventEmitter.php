@@ -132,7 +132,48 @@ class EventEmitter implements EventEmitterInterface
             return call_user_func($wp_has_listener, $hook, $function_to_check);
         }
 
-        return (bool) $this->listeners($hook);
+        return $this->hasInternalListener($hook, $function_to_check);
+    }
+
+    /**
+     * Check if an internal listener exists for hook and optional function
+     *
+     * If the optional second $function_to_check arg is passed, check
+     * if that specific callable has been registered as a listener.
+     *
+     * @param  string  $hook
+     * @param  mixed $function_to_check
+     * @return boolean
+     */
+    protected function hasInternalListener($hook, $function_to_check)
+    {
+        $listeners = $this->listeners($hook);
+
+        if (!$listeners) {
+            return false;
+        }
+
+        if ($function_to_check === false) {
+            return true;
+        }
+
+        return $this->hasMatchingListener($listeners, $function_to_check);
+    }
+
+    /**
+     * Does a specific callable exist in an array of prioritized listeners
+     *
+     * @param  array    $listeners
+     * @param  callable $function_to_check
+     * @return boolean
+     */
+    protected function hasMatchingListener(array $listeners, $function_to_check)
+    {
+        $listeners = array_reduce($listeners, 'array_merge', array());
+
+        return (bool) array_filter($listeners, function ($listener) use ($function_to_check) {
+            return $listener == $function_to_check;
+        });
     }
 
     /**
