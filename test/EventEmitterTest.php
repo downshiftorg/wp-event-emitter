@@ -89,4 +89,108 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($toFilter, $filtered);
     }
+
+    public function testHasEventListenerReturnsFalseWhenNoListenerAdded()
+    {
+        $hasListener = $this->emitter->hasEventListener('foo');
+
+        $this->assertFalse($hasListener);
+    }
+
+    public function testHasEventListenerReturnsTrueWhenListenerAdded()
+    {
+        $this->emitter->on('foo', 'phpinfo');
+
+        $hasListener = $this->emitter->hasEventListener('foo');
+
+        $this->assertTrue($hasListener);
+    }
+
+    public function testHasFilterReturnsFalseWhenNoFilterAdded()
+    {
+        $hasFilter = $this->emitter->hasFilter('foo');
+
+        $this->assertFalse($hasFilter);
+    }
+
+    public function testHasFilterReturnsTrueWhenFilterAdded()
+    {
+        $this->emitter->filter('foo', 'strtoupper');
+
+        $hasFilter = $this->emitter->hasFilter('foo');
+
+        $this->assertTrue($hasFilter);
+    }
+
+    public function testHasEventListenerReturnsFalseWhenStringFunctionToCheckDoesNotMatch()
+    {
+        $this->emitter->on('foo', 'phpinfo');
+
+        $hasListener = $this->emitter->hasEventListener('foo', 'some_other_func');
+
+        $this->assertFalse($hasListener);
+    }
+
+    public function testHasEventListenerReturnsTrueWhenStringFunctionToCheckMatches()
+    {
+        $this->emitter->on('foo', 'phpinfo');
+
+        $hasListener = $this->emitter->hasEventListener('foo', 'phpinfo');
+
+        $this->assertTrue($hasListener);
+    }
+
+    public function testHasEventListenerReturnsTrueWhenClosuresSame()
+    {
+        $saySomething = function () {
+            echo 'something';
+        };
+
+        $this->emitter->on('foo', $saySomething);
+
+        $hasListener = $this->emitter->hasEventListener('foo', $saySomething);
+
+        $this->assertTrue($hasListener);
+    }
+
+    public function testHasEventListenerReturnsFalseWhenComparingDifferentClosures()
+    {
+        $this->emitter->on('foo', function () {
+            echo 'foo';
+        });
+
+        $hasListener = $this->emitter->hasEventListener('foo', function () {
+            echo 'foo';
+        });
+
+        $this->assertFalse($hasListener);
+    }
+
+    public function testHasEventListenerReturnsTrueWhenPassedSameArrayCallable()
+    {
+        $this->emitter->on('foo', array($this, 'listener1'));
+
+        $hasListener = $this->emitter->hasEventListener('foo', array($this, 'listener1'));
+
+        $this->assertTrue($hasListener);
+    }
+
+    public function testHasEventListenerReturnsFalseWhenPassedDifferentArrayCallable()
+    {
+        $this->emitter->on('foo', array($this, 'listener1'));
+
+        $hasListener = $this->emitter->hasEventListener('foo', array($this, 'listener2'));
+
+        $this->assertFalse($hasListener);
+    }
+
+    public function listener1()
+    {
+        // do a thing
+    }
+
+    public function listener2()
+    {
+        // do another thing
+    }
 }

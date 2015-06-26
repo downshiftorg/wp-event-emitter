@@ -7,21 +7,21 @@ interface EventEmitterInterface
     /**
      * Register a function with a hook. TODO support $accepted_args
      *
-     * @param $hook
+     * @param $event
      * @param $function_to_add
      * @param $int $priority
      */
-    public function on($hook, $function_to_add, $priority = 10);
+    public function on($event, $function_to_add, $priority = 10);
 
     /**
      * Register a filter with a hook. TODO support $accepted args
      *
-     * @param $hook
+     * @param $name
      * @param $function_to_add
      * @param $priority
      * @return $this
      */
-    public function filter($hook, $function_to_add, $priority = 10);
+    public function filter($name, $function_to_add, $priority = 10);
 
     /**
      * This function invokes all functions for a hook and transforms the given value(s)
@@ -35,7 +35,31 @@ interface EventEmitterInterface
     /**
      * This function invokes all functions attached to action hook $tag
      *
-     * @param $tag
+     * @param string $event
      */
-    public function emit($tag /** ... args */);
+    public function emit($event /** ... args */);
+
+    /**
+     * Is an event listener registered for the given event
+     *
+     * Delegates to WordPress' `has_action` when present, or falls back
+     * to internal listener queue for testing purposes.
+     *
+     * @param  string $event
+     * @param  mixed  $function_to_check
+     * @return boolean
+     */
+    public function hasEventListener($event, $function_to_check = false);
+
+    /**
+     * Has a filter function been registered for a given filter name
+     *
+     * Delegates to WordPress' `has_filter` when present, or falls back
+     * to internal listener queue for testing purposes.
+     *
+     * @param  string $name
+     * @param  mixed  $function_to_check
+     * @return boolean
+     */
+    public function hasFilter($name, $function_to_check = false);
 }
