@@ -184,6 +184,30 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($hasListener);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
+    public function testWhenWordpressApplyFiltersExistsReturnsResultOfCallingThatFunction()
+    {
+        eval('function apply_filters() { return "foobar"; }');
+
+        $filtered = $this->emitter->applyFilters('some_filter', 'jimjam');
+
+        $this->assertSame('foobar', $filtered);
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testCorrectArgsPassedToWordpressFunctionWhenPresent()
+    {
+        eval('function apply_filters() { return func_get_args(); }');
+
+        $filtered = $this->emitter->applyFilters('foo', 'bar');
+
+        $this->assertSame(array('foo', 'bar'), $filtered);
+    }
+
     public function listener1()
     {
         // do a thing

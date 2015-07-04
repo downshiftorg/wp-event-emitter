@@ -62,14 +62,13 @@ class EventEmitter implements EventEmitterInterface
     public function applyFilters($name, $value /** ...args */)
     {
         $args = func_get_args();
-        $args = array_slice($args, 1);
+        $rest = array_slice($args, 1);
 
         if (function_exists('apply_filters')) {
-            call_user_func_array('apply_filters', $args);
-            return $this;
+            return call_user_func_array('apply_filters', $args);
         }
 
-        return $this->invokeHook($name, $args, 'filter');
+        return $this->invokeHook($name, $rest, 'filter');
     }
 
 
