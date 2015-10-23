@@ -16,10 +16,10 @@ class EventEmitter implements EventEmitterInterface
      * @param $function_to_add
      * @param $int $priority
      */
-    public function on($event, $function_to_add, $priority = 10)
+    public function on($event, $function_to_add, $priority = 10, $acceptedArgs = 1)
     {
         if (function_exists('add_action')) {
-            add_action($event, $function_to_add, $priority);
+            add_action($event, $function_to_add, $priority, $acceptedArgs);
             return $this;
         }
 
@@ -41,10 +41,10 @@ class EventEmitter implements EventEmitterInterface
      * @param int $priority
      * @return $this
      */
-    public function filter($name, $function_to_add, $priority = 10)
+    public function filter($name, $function_to_add, $priority = 10, $acceptedArgs = 1)
     {
         if (function_exists('add_filter')) {
-            add_filter($name, $function_to_add, $priority);
+            add_filter($name, $function_to_add, $priority, $acceptedArgs);
             return $this;
         }
 
