@@ -5,13 +5,23 @@ namespace NetRivet\WordPress;
 interface EventEmitterInterface
 {
     /**
-     * Register a function with a hook. TODO support $accepted_args
+     * Register a function with a hook.
      *
      * @param $event
      * @param $function_to_add
-     * @param $int $priority
+     * @param int $priority
+     * @param int $acceptedArgs
      */
-    public function on($event, $function_to_add, $priority = 10);
+    public function on($event, $function_to_add, $priority = 10, $acceptedArgs = 1);
+
+    /**
+     * Remove listeners from an event
+     *
+     * @param $event
+     * @param $function_to_remove
+     * @param int $priority
+     */
+    public function off($event, $function_to_remove, $priority = 10);
 
     /**
      * Register a filter with a hook. TODO support $accepted args
