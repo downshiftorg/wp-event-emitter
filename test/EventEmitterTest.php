@@ -208,6 +208,16 @@ class EventEmitterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(array('foo', 'bar'), $filtered);
     }
 
+    public function testOffRemovesAllListeners()
+    {
+        $function = function() {};
+        $this->emitter->on('foo', $function);
+
+        $this->emitter->off('foo', $function);
+
+        $this->assertFalse($this->emitter->hasEventListener('foo', $function));
+    }
+
     public function listener1()
     {
         // do a thing

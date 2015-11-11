@@ -14,7 +14,8 @@ class EventEmitter implements EventEmitterInterface
      *
      * @param $event
      * @param $function_to_add
-     * @param $int $priority
+     * @param int $priority
+     * @param int $acceptedArgs
      */
     public function on($event, $function_to_add, $priority = 10, $acceptedArgs = 1)
     {
@@ -31,6 +32,19 @@ class EventEmitter implements EventEmitterInterface
         krsort($this->listeners[$event]);
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function off($event, $function_to_remove, $priority = 10)
+    {
+        if (function_exists('remove_action')) {
+            remove_action($event, $function_to_remove, $priority);
+            return;
+        }
+
+        $this->removeListener($event, $function_to_remove, $priority);
     }
 
     /**
@@ -204,6 +218,34 @@ class EventEmitter implements EventEmitterInterface
         }
 
         $this->listeners[$hook][$priority][] = $function_to_add;
+    }
+
+    /**
+     * Remove a listener
+     *
+     * @param string $event
+     * @param mixed $function_to_remove
+     * @param int $priority
+     * @return void
+     */
+    protected function removeListener($event, $function_to_remove, $priority)
+    {
+        if (!isset($this->listeners[$event])) {
+            return;
+        }
+
+        if (!isset($this->listeners[$event][$priority])) {
+            return;
+        }
+
+        $listeners = array();
+        foreach ($this->listeners[$event][$priority] as $listener) {
+            if ($listener !== $function_to_remove) {
+                $listeners[] = $listener;
+            }
+        }
+
+        $this->listeners[$event][$priority] = $listeners;
     }
 
     /**
