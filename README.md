@@ -1,4 +1,4 @@
-#WP EventEmitter
+# WP EventEmitter
 
 An object oriented event emitter for WordPress actions
 
