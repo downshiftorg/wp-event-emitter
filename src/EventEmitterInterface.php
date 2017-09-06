@@ -26,12 +26,13 @@ interface EventEmitterInterface
     /**
      * Register a filter with a hook. TODO support $accepted args
      *
-     * @param $name
-     * @param $function_to_add
-     * @param $priority
+     * @param string $name
+     * @param string|array $function_to_add
+     * @param string $priority
+     * @param int $acceptedArgs
      * @return $this
      */
-    public function filter($name, $function_to_add, $priority = 10);
+    public function filter($name, $function_to_add, $priority = 10, $acceptedArgs = 1);
 
     /**
      * This function invokes all functions for a hook and transforms the given value(s)
