@@ -1,6 +1,6 @@
 <?php
 
-namespace NetRivet\WordPress;
+namespace DownShift\WordPress;
 
 class EventEmitter implements EventEmitterInterface
 {
