@@ -1,5 +1,5 @@
 {
-    "name": "netrivet/wp-event-emitter",
+    "name": "downshiftorg/wp-event-emitter",
     "description": "An object oriented event emitter for WordPress actions",
     "type": "library",
     "license": "MIT",
@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "NetRivet\\WordPress\\": "src/"
+            "DownShift\\WordPress\\": "src/"
         }
     },
     "require-dev": {
